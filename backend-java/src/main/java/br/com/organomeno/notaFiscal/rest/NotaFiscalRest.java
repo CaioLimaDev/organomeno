@@ -24,16 +24,14 @@ import java.util.List;
 public class NotaFiscalRest {
 
     @Inject
-    NotaFiscalService notaFiscalService;
+    NotaFiscalFacade notaFiscalFacade;
 
     @POST
     @Path("/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response inserirNotaFiscalEItens(@RestForm("htmlFile") FileUpload htmlFile, @RestForm("nomeArquivo") String nomeArquivo) throws Exception {
         try {
-            Document document = Jsoup.parse(htmlFile.uploadedFile().toFile());
-            IdentificadorLayout identificadorLayout = new IdentificadorLayout(document);
-            return notaFiscalService.inserirNotaFiscal(identificadorLayout,nomeArquivo);
+            return notaFiscalFacade.inserirNotaFiscalEItens(htmlFile,nomeArquivo);
         }catch (Exception e){
             throw e;
         }
@@ -42,8 +40,7 @@ public class NotaFiscalRest {
     @GET
     @Path("/")
     public Response listarNotasFiscais(NotaFiscalFiltroDTO notaFiscalFiltroDTO){
-        List<NotaFiscalDTO> notaFiscalDTOList = notaFiscalService.filtrarNotaFiscal(notaFiscalFiltroDTO);
-        return Response.ok(notaFiscalDTOList).build();
+        return notaFiscalFacade.listarNotasFiscais(notaFiscalFiltroDTO);
     }
 
 }

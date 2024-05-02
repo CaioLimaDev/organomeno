@@ -12,6 +12,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.util.List;
 
@@ -32,8 +35,10 @@ public class NotaFiscalServiceImpl implements NotaFiscalService{
 
     @Override
     @Transactional
-    public Response inserirNotaFiscal(IdentificadorLayout identificadorLayout, String descricaoArquivo ) throws Exception{
+    public Response inserirNotaFiscal(FileUpload htmlFile, String descricaoArquivo ) throws Exception{
         try {
+            Document document = Jsoup.parse(htmlFile.uploadedFile().toFile());
+            IdentificadorLayout identificadorLayout = new IdentificadorLayout(document);
 
             NotaFiscalDTO notaDTO = identificadorLayout.getLayout();
             NotaFiscal nota = notaFiscalMapper.toEntity(notaDTO);
