@@ -3,6 +3,8 @@ package br.com.organomeno.despesas.rest;
 import br.com.organomeno.despesas.entity.Despesas;
 import br.com.organomeno.despesas.entity.DespesasDTO;
 import br.com.organomeno.despesas.entity.DespesasFiltroDTO;
+import br.com.organomeno.despesas.entity.DespesasMapper;
+import br.com.organomeno.despesas.repository.DespesasRepository;
 import br.com.organomeno.despesas.services.DespesasService;
 import io.vertx.core.json.Json;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,6 +22,11 @@ public class DespesasRest {
 
     @Inject
     DespesasService despesasService;
+    @Inject
+    DespesasMapper despesasMapper;
+    @Inject
+    DespesasRepository despesasRepository;
+
 
     @GET
     @Path("/todos")
@@ -57,7 +64,9 @@ public class DespesasRest {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response vincularNotaFiscal(DespesasDTO despesasDTO){
         try {
-            despesasService.vincularNotaFiscal(despesasDTO);
+            Despesas despesas = despesasMapper.toEntity(despesasDTO);
+            despesas = despesasRepository.getEntityManager().merge(despesas);
+            despesasRepository.persist(despesas);
             return Response.ok(Json.encode("Nota Fiscal Vinculada com Sucesso")).build();
         } catch (Exception e) {
             throw e;
